@@ -153,10 +153,7 @@ app.delete('/api/pdf/:shareId', (req, res) => {
   }
 });
 
-// Serve the React app for all other routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// API routes only - Vercel will handle static file serving
 
 // Error handling middleware
 app.use((error, req, res, next) => {

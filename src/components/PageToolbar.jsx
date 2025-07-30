@@ -7,7 +7,33 @@ import {
   Maximize2, 
   Minimize2,
   RotateCcw,
-  RotateCw
+  RotateCw,
+  BookOpen,
+  Book,
+  Move,
+  BookOpen as Magazine,
+  Sliders,
+  Share2,
+  Download,
+  Settings,
+  HelpCircle,
+  Eye,
+  EyeOff,
+  Play,
+  Pause,
+  Clock,
+  BarChart3,
+  Globe,
+  Languages,
+  Palette,
+  QrCode,
+  Copy,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Mail,
+  ExternalLink
 } from 'lucide-react';
 
 const PageToolbar = ({ 
@@ -20,7 +46,28 @@ const PageToolbar = ({
   isFullscreen,
   zoom,
   onRotateLeft,
-  onRotateRight
+  onRotateRight,
+  isSpreadMode,
+  onToggleSpreadMode,
+  onFitToView,
+  pageEffect,
+  onPageEffectChange,
+  autoPlay,
+  onToggleAutoPlay,
+  onShare,
+  onDownload,
+  onSettings,
+  onHelp,
+  showControls,
+  onToggleControls,
+  showThumbnails,
+  onToggleThumbnails,
+  showPageNumbers,
+  showProgressBar,
+  rightToLeft,
+  onToggleRightToLeft,
+  viewCount,
+  timeSpent
 }) => {
   const handlePageInput = (e) => {
     const page = parseInt(e.target.value);
@@ -32,6 +79,30 @@ const PageToolbar = ({
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.target.blur();
+    }
+  };
+
+  const pageEffects = [
+    { id: 'magazine', name: 'Magazine', icon: Magazine },
+    { id: 'book', name: 'Book', icon: Book },
+    { id: 'slider', name: 'Slider', icon: Sliders },
+    { id: 'coverflow', name: 'Coverflow', icon: BookOpen },
+    { id: 'cards', name: 'Cards', icon: Book },
+    { id: 'notebook', name: 'Notebook', icon: BookOpen },
+    { id: 'one-page', name: 'One Page', icon: Book }
+  ];
+
+  const formatTime = (ms) => {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes % 60}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds % 60}s`;
+    } else {
+      return `${seconds}s`;
     }
   };
 
@@ -74,15 +145,107 @@ const PageToolbar = ({
           </button>
         </div>
 
-        {/* Center - Page info */}
-        <div className="hidden md:block">
+        {/* Center - Page info and statistics */}
+        <div className="hidden md:flex items-center space-x-4">
           <span className="text-sm text-gray-600 dark:text-gray-400">
             Page {currentPage} of {totalPages}
           </span>
+          
+          <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+            <BarChart3 className="w-3 h-3" />
+            <span>{viewCount} views</span>
+          </div>
+          
+          <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+            <Clock className="w-3 h-3" />
+            <span>{formatTime(timeSpent)}</span>
+          </div>
         </div>
 
         {/* Right side - Controls */}
         <div className="flex items-center space-x-2">
+          {/* Auto-play toggle */}
+          <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
+            <button
+              onClick={onToggleAutoPlay}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                autoPlay 
+                  ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' 
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              aria-label={autoPlay ? "Stop auto-play" : "Start auto-play"}
+              title={autoPlay ? "Stop auto-play" : "Start auto-play"}
+            >
+              {autoPlay ? (
+                <Pause className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+
+          {/* Page effect selector */}
+          <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
+            <div className="relative">
+              <select
+                value={pageEffect}
+                onChange={(e) => onPageEffectChange(e.target.value)}
+                className="appearance-none bg-transparent border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {pageEffects.map((effect) => (
+                  <option key={effect.id} value={effect.id}>
+                    {effect.name}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <ChevronLeft className="w-3 h-3 rotate-90" />
+              </div>
+            </div>
+          </div>
+
+          {/* Spread mode toggle */}
+          <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
+            <button
+              onClick={onToggleSpreadMode}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                isSpreadMode 
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' 
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              aria-label={isSpreadMode ? "Switch to single page view" : "Switch to spread view"}
+              title={isSpreadMode ? "Switch to single page view" : "Switch to spread view"}
+            >
+              {isSpreadMode ? (
+                <BookOpen className="w-4 h-4" />
+              ) : (
+                <Book className="w-4 h-4" />
+              )}
+            </button>
+            <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+              {isSpreadMode ? 'Spread' : 'Single'}
+            </span>
+          </div>
+
+          {/* Right to Left toggle */}
+          <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
+            <button
+              onClick={onToggleRightToLeft}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                rightToLeft 
+                  ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400' 
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              aria-label={rightToLeft ? "Switch to Left to Right" : "Switch to Right to Left"}
+              title={rightToLeft ? "Switch to Left to Right" : "Switch to Right to Left"}
+            >
+              <Globe className="w-4 h-4" />
+            </button>
+            <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+              {rightToLeft ? 'RTL' : 'LTR'}
+            </span>
+          </div>
+
           {/* Zoom controls */}
           <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
             <button
@@ -106,6 +269,15 @@ const PageToolbar = ({
             >
               <ZoomIn className="w-4 h-4" />
             </button>
+
+            <button
+              onClick={onFitToView}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              aria-label="Fit to view"
+              title="Fit to view"
+            >
+              <Move className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Rotation controls */}
@@ -124,6 +296,77 @@ const PageToolbar = ({
               aria-label="Rotate right"
             >
               <RotateCw className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Visibility controls */}
+          <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
+            <button
+              onClick={onToggleControls}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                showControls 
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' 
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              aria-label={showControls ? "Hide controls" : "Show controls"}
+              title={showControls ? "Hide controls" : "Show controls"}
+            >
+              {showControls ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            </button>
+            
+            <button
+              onClick={onToggleThumbnails}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                showThumbnails 
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' 
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              aria-label={showThumbnails ? "Hide thumbnails" : "Show thumbnails"}
+              title={showThumbnails ? "Hide thumbnails" : "Show thumbnails"}
+            >
+              <BookOpen className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
+            <button
+              onClick={onShare}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              aria-label="Share flipbook"
+              title="Share flipbook"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+            
+            <button
+              onClick={onDownload}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              aria-label="Download flipbook"
+              title="Download flipbook"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Settings and Help */}
+          <div className="flex items-center space-x-1 border-r border-gray-300 dark:border-gray-600 pr-3">
+            <button
+              onClick={onSettings}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              aria-label="Settings"
+              title="Settings"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+            
+            <button
+              onClick={onHelp}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              aria-label="Help"
+              title="Help"
+            >
+              <HelpCircle className="w-4 h-4" />
             </button>
           </div>
 
